@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -12,36 +7,64 @@ namespace SpotifyTitleGrabber
 {
     public partial class MainForm : Form
     {
-        string titleName;
-        int PID;
+        Process spotifyProcess;
+        string titleNameOld = "", titleName;
 
         public MainForm()
         {
             InitializeComponent();
+            DetectSpotify();
+            textBox_CurrentSongFile.Text = Environment.CurrentDirectory + "\\CurrentSong.txt";
+            textBox_SongListFile.Text = Environment.CurrentDirectory + "\\SongList.txt";
+        }
 
-            foreach (var p in Process.GetProcesses())
+        public void DetectSpotify()
+        {
+            foreach (var p in Process.GetProcessesByName("Spotify"))
             {
-                if (p.ProcessName == "Spotify" & p.MainWindowTitle != "")
+                if (p.MainWindowTitle != "")
                 {
                     label_ProgramStatus.Text = "Spotify detected!";
-                    PID = p.Id;
+                    spotifyProcess = p;
                     return;
                 }
-                else label_ProgramStatus.Text = "Can't detect Spotify. Check if it's running!";
             }
+            label_ProgramStatus.Text = "Can't detect Spotify. Check if it's running!";
         }
 
         private void timer_NameRefresh_Tick(object sender, EventArgs e)
         {
-            foreach (var p in Process.GetProcesses())
+            if (spotifyProcess != null)
             {
-                if (p.Id == PID)
+                spotifyProcess.Refresh();
+                if (spotifyProcess.HasExited)
+                    DetectSpotify();
+                else if (spotifyProcess.MainWindowTitle == "Spotify")
                 {
-                    if (p.MainWindowTitle == "Spotify")
-                        label_TitleName.Text = "Currently no song playing!";
-                    else label_TitleName.Text = p.MainWindowTitle.ToString();
+                    titleName = "Currently no song playing!";
+                    if (titleName != titleNameOld)
+                    {
+                        titleNameOld = titleName;
+                        label_TitleName.Text = titleName;
+                        File.WriteAllText(textBox_CurrentSongFile.Text, titleName);
+                        File.AppendAllText(textBox_SongListFile.Text, titleName + Environment.NewLine);
+                    }
+                }
+                else if (spotifyProcess.MainWindowTitle == "Drag")
+                    return;
+                else
+                {
+                    titleName = spotifyProcess.MainWindowTitle;
+                    if (titleName != titleNameOld)
+                    {
+                        titleNameOld = titleName;
+                        label_TitleName.Text = titleName;
+                        File.WriteAllText(textBox_CurrentSongFile.Text, titleName);
+                        File.AppendAllText(textBox_SongListFile.Text, titleName + Environment.NewLine);
+                    }
                 }
             }
+            else DetectSpotify();
         }
     }
 }
