@@ -22,5 +22,53 @@ namespace SpotifyTitleGrabber.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ListPath {
+            get {
+                return ((string)(this["ListPath"]));
+            }
+            set {
+                this["ListPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CurrentSongPath {
+            get {
+                return ((string)(this["CurrentSongPath"]));
+            }
+            set {
+                this["CurrentSongPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TitleFormat {
+            get {
+                return ((string)(this["TitleFormat"]));
+            }
+            set {
+                this["TitleFormat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TitleFormatNoRemix {
+            get {
+                return ((string)(this["TitleFormatNoRemix"]));
+            }
+            set {
+                this["TitleFormatNoRemix"] = value;
+            }
+        }
     }
 }
