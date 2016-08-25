@@ -22,8 +22,8 @@ namespace SpotifyTitleGrabber
             {
                 var cfgx = new Configuration();
 
-                cfgx.ListPath = tbxSongListFile.Text;
-                cfgx.CurrentSongPath = tbxCurrentSongFile.Text;
+                cfgx.ListPath = tbxSongListFile.Text = Environment.CurrentDirectory + "\\SongList.txt";
+                cfgx.CurrentSongPath = tbxCurrentSongFile.Text = Environment.CurrentDirectory + "\\CurrentSong.txt";
                 cfgx.TitleFormat = tbxTitleFormat.Text;
                 cfgx.TitleFormatNoRemix = tbxTitleFormatNoRemix.Text;
                 Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber");
