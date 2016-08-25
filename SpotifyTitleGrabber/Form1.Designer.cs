@@ -166,6 +166,7 @@
             // 
             this.saveListFileDialog.FileName = "SongList.txt";
             this.saveListFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            this.saveListFileDialog.OverwritePrompt = false;
             // 
             // groupBox2
             // 

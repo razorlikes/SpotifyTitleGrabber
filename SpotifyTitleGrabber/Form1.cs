@@ -18,7 +18,7 @@ namespace SpotifyTitleGrabber
             InitializeComponent();
             DetectSpotify();
 
-            if (!File.Exists(Environment.CurrentDirectory + "\\config.cfg"))
+            if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg"))
             {
                 var cfgx = new Configuration();
 
@@ -26,7 +26,10 @@ namespace SpotifyTitleGrabber
                 cfgx.CurrentSongPath = tbxCurrentSongFile.Text;
                 cfgx.TitleFormat = tbxTitleFormat.Text;
                 cfgx.TitleFormatNoRemix = tbxTitleFormatNoRemix.Text;
-                cfgx.SaveToFile(Environment.CurrentDirectory + "\\config.cfg");
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber");
+                cfgx.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg");
+
+                MessageBox.Show("The configuration file was not found.\nThe program has created a new one.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }       
 
             var cfg = Configuration.FromFile(Environment.CurrentDirectory + "\\config.cfg");
@@ -110,6 +113,7 @@ namespace SpotifyTitleGrabber
                 if (saveCurrentFileDialog.FileName != tbxCurrentSongFile.Text & File.Exists(tbxCurrentSongFile.Text) & !File.Exists(saveCurrentFileDialog.FileName))
                     File.Move(tbxCurrentSongFile.Text, saveCurrentFileDialog.FileName);
                 tbxCurrentSongFile.Text = saveCurrentFileDialog.FileName;
+                saveCurrentFileDialog.Dispose();
             }      
         }
 
@@ -121,6 +125,7 @@ namespace SpotifyTitleGrabber
                 if (saveListFileDialog.FileName != tbxSongListFile.Text & File.Exists(tbxSongListFile.Text) & !File.Exists(saveListFileDialog.FileName))
                     File.Move(tbxSongListFile.Text, saveListFileDialog.FileName);
                 tbxSongListFile.Text = saveListFileDialog.FileName;
+                saveListFileDialog.Dispose();
             }
         }
 
@@ -138,14 +143,33 @@ namespace SpotifyTitleGrabber
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            var cfg = Configuration.FromFile(Environment.CurrentDirectory + "\\config.cfg");
+            var cfg = new Configuration();
 
             cfg.ListPath = tbxSongListFile.Text;
             cfg.CurrentSongPath = tbxCurrentSongFile.Text;
             cfg.TitleFormat = tbxTitleFormat.Text;
             cfg.TitleFormatNoRemix = tbxTitleFormatNoRemix.Text;
 
-            cfg.SaveToFile(Environment.CurrentDirectory + "\\config.cfg");
+            MessageBox.Show("The folder: " + Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg\nDoes not exist. The program will now create it.", "Error", MessageBoxButtons.OK);
+
+            try
+            {
+                cfg.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg");
+            }
+            catch(UnauthorizedAccessException)
+            {
+                MessageBox.Show("This user has no right to access:\n" + Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg");
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show("The folder: " + Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg\nDoes not exist. The program will now create it.", "Error", MessageBoxButtons.OK);
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber");
+                cfg.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg");
+            }
+            catch (IOException exc)
+            {
+                MessageBox.Show(exc.ToString());
+            }
         }
     }
 
