@@ -150,8 +150,6 @@ namespace SpotifyTitleGrabber
             cfg.TitleFormat = tbxTitleFormat.Text;
             cfg.TitleFormatNoRemix = tbxTitleFormatNoRemix.Text;
 
-            MessageBox.Show("The folder: " + Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg\nDoes not exist. The program will now create it.", "Error", MessageBoxButtons.OK);
-
             try
             {
                 cfg.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg");
