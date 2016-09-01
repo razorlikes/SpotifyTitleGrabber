@@ -3,7 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml.Serialization;
 
 namespace SpotifyTitleGrabber
 {
@@ -32,7 +32,7 @@ namespace SpotifyTitleGrabber
                 MessageBox.Show("The configuration file was not found.\nThe program has created a new one.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }       
 
-            var cfg = Configuration.FromFile(Environment.CurrentDirectory + "\\config.cfg");
+            var cfg = Configuration.FromFile(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg");
 
             if (cfg.ListPath.Length > 0)
                 tbxSongListFile.Text = cfg.ListPath;
@@ -171,39 +171,51 @@ namespace SpotifyTitleGrabber
         }
     }
 
-    [Serializable]
-    internal class Configuration
+    public class Configuration
     {
-        internal string CurrentSongPath { get; set; }
-        internal string ListPath { get; set; }
-        internal string TitleFormat { get; set; }
-        internal string TitleFormatNoRemix { get; set; }
+        public string TitleFormatNoRemix { get; set; }
+        public string TitleFormat { get; set; }
+        public string ListPath { get; set; }
+        public string CurrentSongPath { get; set; }
 
-        internal bool IsValid => File.Exists(CurrentSongPath) && File.Exists(ListPath) && File.Exists(TitleFormat) && File.Exists(TitleFormatNoRemix);
+        #region XmlSerialization Support
 
-        #region Serialization Support
-
-        internal void SaveToFile(string filePath)
+        public void SaveToFile(string filePath)
         {
             SaveToFile(new FileInfo(filePath));
         }
 
-        internal void SaveToFile(FileInfo file)
+        public void SaveToFile(FileInfo fi)
         {
-            using (FileStream fs = file.Open(FileMode.Create, FileAccess.Write))
-                new BinaryFormatter().Serialize(fs, this);
+            using (FileStream fs = fi.Open(FileMode.Create, FileAccess.Write))
+            {
+                SerializeXml(fs);
+            }
         }
 
-        internal static Configuration FromFile(string filePath)
+        public static Configuration FromFile(string filePath)
         {
             return FromFile(new FileInfo(filePath));
         }
 
-        internal static Configuration FromFile(FileInfo file)
+        public static Configuration FromFile(FileInfo fi)
         {
-            using (FileStream fs = file.Open(FileMode.Open, FileAccess.Read))
-                return (Configuration)new BinaryFormatter().Deserialize(fs);
+            using (FileStream fs = fi.Open(FileMode.Open, FileAccess.Read))
+            {
+                return DeserializeXml(fs);
+            }
         }
+
+        private void SerializeXml(Stream serializationStream)
+        {
+            new XmlSerializer(typeof(Configuration)).Serialize(serializationStream, this);
+        }
+
+        private static Configuration DeserializeXml(Stream serializationStream)
+        {
+            return (Configuration)new XmlSerializer(typeof(Configuration)).Deserialize(serializationStream);
+        }
+
         #endregion
     }
 }
