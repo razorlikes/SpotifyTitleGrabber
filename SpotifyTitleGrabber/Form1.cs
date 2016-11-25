@@ -12,7 +12,7 @@ namespace SpotifyTitleGrabber
         Process spotifyProcess;
         string titleNameOld, titleName, splitArg = " - ", formattedTitle;
         string[] splittedTitle;
-        bool createList = false;
+        bool createList;
 
         public MainForm()
         {
@@ -81,7 +81,7 @@ namespace SpotifyTitleGrabber
             cfgx.CurrentSongPath = tbxCurrentSongFile.Text = Environment.CurrentDirectory + "\\CurrentSong.txt";
             cfgx.TitleFormat = tbxTitleFormat.Text;
             cfgx.TitleFormatNoRemix = tbxTitleFormatNoRemix.Text;
-            cfgx.CreateList = createList;
+            cfgx.CreateList = false;
 
             Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber");
             cfgx.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg");
