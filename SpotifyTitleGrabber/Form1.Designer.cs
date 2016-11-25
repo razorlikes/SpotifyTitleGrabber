@@ -51,6 +51,7 @@
             this.tbxTitleFormat = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.cbxCreateList = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -81,7 +82,6 @@
             // 
             // lblTitleName
             // 
-            this.lblTitleName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTitleName.AutoEllipsis = true;
             this.lblTitleName.Location = new System.Drawing.Point(4, 54);
             this.lblTitleName.Name = "lblTitleName";
@@ -170,6 +170,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.cbxCreateList);
             this.groupBox2.Controls.Add(this.tbxTitleFormatNoRemix);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.label6);
@@ -178,7 +179,7 @@
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Location = new System.Drawing.Point(7, 183);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(347, 118);
+            this.groupBox2.Size = new System.Drawing.Size(347, 141);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Settings";
@@ -236,11 +237,22 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Title format:";
             // 
+            // cbxCreateList
+            // 
+            this.cbxCreateList.AutoSize = true;
+            this.cbxCreateList.Location = new System.Drawing.Point(9, 118);
+            this.cbxCreateList.Name = "cbxCreateList";
+            this.cbxCreateList.Size = new System.Drawing.Size(88, 17);
+            this.cbxCreateList.TabIndex = 6;
+            this.cbxCreateList.Text = "Create list file";
+            this.cbxCreateList.UseVisualStyleBackColor = true;
+            this.cbxCreateList.CheckedChanged += new System.EventHandler(this.cbxCreateList_CheckedChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(361, 308);
+            this.ClientSize = new System.Drawing.Size(361, 332);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.lblTitleName);
@@ -285,6 +297,7 @@
         private System.Windows.Forms.TextBox tbxTitleFormatNoRemix;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.CheckBox cbxCreateList;
     }
 }
 

@@ -12,6 +12,7 @@ namespace SpotifyTitleGrabber
         Process spotifyProcess;
         string titleNameOld, titleName, splitArg = " - ", formattedTitle;
         string[] splittedTitle;
+        bool createList = false;
 
         public MainForm()
         {
@@ -19,32 +20,29 @@ namespace SpotifyTitleGrabber
             DetectSpotify();
 
             if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg"))
-            {
-                var cfgx = new Configuration();
+                firstRun();
 
-                cfgx.ListPath = tbxSongListFile.Text = Environment.CurrentDirectory + "\\SongList.txt";
-                cfgx.CurrentSongPath = tbxCurrentSongFile.Text = Environment.CurrentDirectory + "\\CurrentSong.txt";
-                cfgx.TitleFormat = tbxTitleFormat.Text;
-                cfgx.TitleFormatNoRemix = tbxTitleFormatNoRemix.Text;
-                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber");
-                cfgx.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg");
-
-                MessageBox.Show("The configuration file was not found.\nThe program has created a new one.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }       
-
+            //read out the settings file and apply its values to the form
             var cfg = Configuration.FromFile(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg");
-
             if (cfg.ListPath.Length > 0)
                 tbxSongListFile.Text = cfg.ListPath;
             else tbxSongListFile.Text = Environment.CurrentDirectory + "\\SongList.txt";
             if (cfg.CurrentSongPath.Length > 0)
                 tbxCurrentSongFile.Text = cfg.CurrentSongPath;
             else tbxCurrentSongFile.Text = Environment.CurrentDirectory + "\\CurrentSong.txt";
-
             if (cfg.TitleFormat.Length > 0)
                 tbxTitleFormat.Text = cfg.TitleFormat;
             if (cfg.TitleFormatNoRemix.Length > 0)
                 tbxTitleFormatNoRemix.Text = cfg.TitleFormatNoRemix;
+            createList = cfg.CreateList;
+            if (createList == true)
+                cbxCreateList.CheckState = CheckState.Checked;
+            else
+            {
+                cbxCreateList.CheckState = CheckState.Unchecked;
+                tbxSongListFile.Enabled = false;
+                btnSongListFile.Enabled = false;
+            }
 
             saveCurrentFileDialog.InitialDirectory = Environment.CurrentDirectory;
             saveListFileDialog.InitialDirectory = Environment.CurrentDirectory;
@@ -75,6 +73,22 @@ namespace SpotifyTitleGrabber
             else DetectSpotify();
         }
 
+        public void firstRun()
+        {
+            var cfgx = new Configuration();
+
+            cfgx.ListPath = tbxSongListFile.Text = Environment.CurrentDirectory + "\\SongList.txt";
+            cfgx.CurrentSongPath = tbxCurrentSongFile.Text = Environment.CurrentDirectory + "\\CurrentSong.txt";
+            cfgx.TitleFormat = tbxTitleFormat.Text;
+            cfgx.TitleFormatNoRemix = tbxTitleFormatNoRemix.Text;
+            cfgx.CreateList = createList;
+
+            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber");
+            cfgx.SaveToFile(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\razorlikes\\SpotifyTitleGrabber\\config.cfg");
+
+            MessageBox.Show("The configuration file was not found.\nThe program has created a new one.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        }
+
         public void DetectSpotify()
         {
             foreach (var p in Process.GetProcessesByName("Spotify"))
@@ -102,7 +116,8 @@ namespace SpotifyTitleGrabber
             lblTitleName.Text = formattedTitle;
             toolTip.SetToolTip(lblTitleName, lblTitleName.Text);
             File.WriteAllText(tbxCurrentSongFile.Text, formattedTitle);
-            File.AppendAllText(tbxSongListFile.Text, titleName + Environment.NewLine);
+            if (createList == true)
+                File.AppendAllText(tbxSongListFile.Text, titleName + Environment.NewLine);
         }
 
         private void btnCurrentSongFile_Click(object sender, EventArgs e)
@@ -129,6 +144,22 @@ namespace SpotifyTitleGrabber
             }
         }
 
+        private void cbxCreateList_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbxCreateList.Checked)
+            {
+                tbxSongListFile.Enabled = true;
+                btnSongListFile.Enabled = true;
+                createList = true;
+            }
+            else if (!cbxCreateList.Checked)
+            {
+                createList = false;
+                tbxSongListFile.Enabled = false;
+                btnSongListFile.Enabled = false;
+            }
+        }
+
         private void tbxTitleFormat_Validated(object sender, EventArgs e)
         {
             if (titleName != null)
@@ -149,6 +180,7 @@ namespace SpotifyTitleGrabber
             cfg.CurrentSongPath = tbxCurrentSongFile.Text;
             cfg.TitleFormat = tbxTitleFormat.Text;
             cfg.TitleFormatNoRemix = tbxTitleFormatNoRemix.Text;
+            cfg.CreateList = createList;
 
             try
             {
@@ -177,6 +209,7 @@ namespace SpotifyTitleGrabber
         public string TitleFormat { get; set; }
         public string ListPath { get; set; }
         public string CurrentSongPath { get; set; }
+        public bool CreateList { get; set; }
 
         #region XmlSerialization Support
 
